@@ -14,15 +14,16 @@ public class MidiSynth {
 	}
 
 	private Thread m_streamThread[];
-	private final int THREAD_MAX = 3;
+	private final int THREAD_MAX = 5;
 
 	private int index;
 	private long[] synthNums;
 	public boolean m_bIsStreaming = true;
 	private SparseArray<Integer> noteManager;
+	private String filePath;
 
-	public MidiSynth(){
-
+	public MidiSynth(String filePath){
+		this.filePath = filePath;
 	}
 
 	public void startSynth() {
@@ -47,7 +48,6 @@ public class MidiSynth {
 				Thread.sleep(1000);
 
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -55,17 +55,19 @@ public class MidiSynth {
 
 	public void destroy()
 	{
-		m_bIsStreaming = true;
+		if (!m_bIsStreaming){
+			m_bIsStreaming = true;
 
-		try
-		{
-			for(int i = 0; i < THREAD_MAX; i++){
-				m_streamThread[i].join();
+			try
+			{
+				for(int i = 0; i < THREAD_MAX; i++){
+					m_streamThread[i].join();
+				}
 			}
-		}
-		catch(final Exception ex)
-		{
-			ex.printStackTrace();
+			catch(final Exception ex)
+			{
+				ex.printStackTrace();
+			}
 		}
 	}
 
@@ -102,7 +104,7 @@ public class MidiSynth {
 			synthNums[synthNum] = midiSynth.malloc();
 
 //			String filePath = "/storage/sdcard0" + "/FluidR3_GM.sf2";
-			String filePath = "/storage/sdcard0" + "/GeneralUser.sf2";
+//			String filePath = "/storage/sdcard0" + "/GeneralUser_GS.sf2";
 //			String filePath = "/storage/sdcard0" + "/Florestan_Basic_GM_GS.sf2";
 
 			midiSynth.open(synthNums[synthNum]);
@@ -138,7 +140,7 @@ public class MidiSynth {
 		return synthNum;
 	}
 
-	public void sendNoteOn(int channel, int key, int velocity) {
+	public void sendNoteOn(int channel, int key, int velocity)  {
 
 		int synthNum = getSynthNumNoteOn();
 		noteManager.append(key, synthNum);
@@ -151,6 +153,17 @@ public class MidiSynth {
 		if (noteManager.get(key) != null){
 			int synthNum = (Integer) noteManager.get(key);
 			this.noteOff(synthNums[synthNum],channel, key, velocity);
+		}
+	}
+
+	public void sendDrumOn(int channel, int key, int velocity){
+		int synthNum = getSynthNumNoteOn();
+		try {
+			this.noteOn(synthNums[synthNum],channel, key, velocity);
+			Thread.sleep(50);
+			this.noteOff(synthNums[synthNum],channel, key, velocity);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 

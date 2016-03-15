@@ -1,6 +1,7 @@
 package com.example.cai.android_fluidsynth_mididriver;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.PorterDuff.Mode;
 import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
@@ -20,6 +21,10 @@ import android.widget.ToggleButton;
 
 import org.herac.tuxguitar.player.impl.midiport.fluidsynth.MidiSynth;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -86,6 +91,30 @@ public class UsbMidiDriverSampleActivity extends Activity {
 		return null;
 	}
 
+    public String getCopyFile(Context context, String fileName)   {
+        File cacheFile = new File(context.getFilesDir(), fileName);
+        try {
+            InputStream inputStream = context.getAssets().open(fileName);
+            try {
+                FileOutputStream outputStream = new FileOutputStream(cacheFile);
+                try {
+                    byte[] buf = new byte[1024];
+                    int len;
+                    while ((len = inputStream.read(buf)) > 0) {
+                        outputStream.write(buf, 0, len);
+                    }
+                } finally {
+                    outputStream.close();
+                }
+            } finally {
+                inputStream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return cacheFile.getAbsolutePath();
+    }
+
     MidiSynth midiSynth;
 
 	@Override
@@ -93,7 +122,10 @@ public class UsbMidiDriverSampleActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-        midiSynth = new MidiSynth();
+        String filePath = getCopyFile(this,"aaa.sf2");
+
+        midiSynth = new MidiSynth(filePath);
+
 
         usbMidiDriver = new UsbMidiDriver(this) {
             @Override
@@ -161,7 +193,9 @@ public class UsbMidiDriverSampleActivity extends Activity {
                     getMidiOutputDeviceFromSpinner().sendMidiNoteOff(cable, channel, note, velocity);
                     midiOutputEventHandler.sendMessage(Message.obtain(midiOutputEventHandler, 0, "NoteOff from: " + sender.getUsbDevice().getDeviceName() + ", cable: " + cable + ", channel: " + channel + ", note: " + note + ", velocity: " + velocity));
                 }
-                midiSynth.sendNoteOff(channel,note,velocity);
+                if (channel != 9){
+                    midiSynth.sendNoteOff(channel,note,velocity);
+                }
             }
 
             @Override
@@ -172,8 +206,13 @@ public class UsbMidiDriverSampleActivity extends Activity {
                     getMidiOutputDeviceFromSpinner().sendMidiNoteOn(cable, channel, note, velocity);
                     midiOutputEventHandler.sendMessage(Message.obtain(midiOutputEventHandler, 0, "NoteOn from: " + sender.getUsbDevice().getDeviceName() + ", cable: " + cable + ",  channel: " + channel + ", note: " + note + ", velocity: " + velocity));
                 }
-                midiSynth.sendProgramChange(channel,42);
-                midiSynth.sendNoteOn(channel,note,velocity);
+
+                if (channel != 9){
+                    midiSynth.sendNoteOn(channel,note,velocity);
+                }else {
+                    midiSynth.sendDrumOn(channel,note,velocity);
+                }
+
             }
 
             @Override
@@ -409,7 +448,7 @@ public class UsbMidiDriverSampleActivity extends Activity {
 		super.onDestroy();
 
         usbMidiDriver.close();
-
+        midiSynth.destroy();
 	}
 
 }
