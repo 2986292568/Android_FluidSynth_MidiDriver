@@ -41,12 +41,14 @@ JNIEXPORT jlong JNICALL Java_org_herac_tuxguitar_player_impl_midiport_fluidsynth
 	handle->synth = NULL;
 	handle->soundfont_id = 0;
 
+	fluid_settings_setint(handle->settings, "synth.audio-channels",2);
+	fluid_settings_setint(handle->settings, "synth.cpu-cores", 4);
 	fluid_settings_setint(handle->settings, "audio.periods", 64);
 	fluid_settings_setint(handle->settings, "audio.period-size", 8192);
 	fluid_settings_setint(handle->settings, "audio.realtime-prio", 99);
 	fluid_settings_setstr(handle->settings, "player.timing-source", "system");
 	
-	memcpy(&ptr, &handle, sizeof( handle ));
+	memcpy(&ptr, &handle, sizeof( handle));
 	
 	return ptr;
 }

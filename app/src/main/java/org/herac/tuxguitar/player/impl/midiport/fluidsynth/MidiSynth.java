@@ -72,7 +72,7 @@ public class MidiSynth {
 	}
 
 	public boolean isInit(){
-		for (int i=0;i>synthNums.length;i++){
+		for (int i=0;i<synthNums.length;i++){
 			if (synthNums[i]!=0){
 				return true;
 			}
@@ -142,49 +142,61 @@ public class MidiSynth {
 
 	public void sendNoteOn(int channel, int key, int velocity)  {
 
-		int synthNum = getSynthNumNoteOn();
-		noteManager.append(key, synthNum);
-		this.noteOn(synthNums[synthNum],channel, key, velocity);
+		if (isInit()){
+			int synthNum = getSynthNumNoteOn();
+			noteManager.append(key, synthNum);
+			this.noteOn(synthNums[synthNum],channel, key, velocity);
+
+		}
 
 	}
 
 	public void sendNoteOff(int channel, int key, int velocity) {
-
-		if (noteManager.get(key) != null){
-			int synthNum = (Integer) noteManager.get(key);
-			this.noteOff(synthNums[synthNum],channel, key, velocity);
+		if (isInit()){
+			if (noteManager.get(key) != null){
+				int synthNum = (Integer) noteManager.get(key);
+				this.noteOff(synthNums[synthNum],channel, key, velocity);
+			}
 		}
+
 	}
 
 	public void sendDrumOn(int channel, int key, int velocity){
-		int synthNum = getSynthNumNoteOn();
-		try {
-			this.noteOn(synthNums[synthNum],channel, key, velocity);
-			Thread.sleep(50);
-			this.noteOff(synthNums[synthNum],channel, key, velocity);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if (isInit()){
+			int synthNum = getSynthNumNoteOn();
+			try {
+				this.noteOn(synthNums[synthNum],channel, key, velocity);
+				Thread.sleep(50);
+				this.noteOff(synthNums[synthNum],channel, key, velocity);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
+
 	}
 
 	public void sendControlChange(int channel, int controller, int value) {
-
-		for(int i = 0; i < THREAD_MAX; i++){
-			controlChange(synthNums[i], channel, controller,value);
+		if (isInit()){
+			for(int i = 0; i < THREAD_MAX; i++){
+				controlChange(synthNums[i], channel, controller,value);
+			}
 		}
 	}
 
 	public void sendProgramChange(int channel, int value) {
-
-		for(int i = 0; i < THREAD_MAX; i++){
-			programChange(synthNums[i], channel,value);
+		if (isInit()){
+			for(int i = 0; i < THREAD_MAX; i++){
+				programChange(synthNums[i], channel,value);
+			}
 		}
+
 	}
 
 	public void sendPitchBend(int channel, int value) {
-
-		for(int i = 0; i < THREAD_MAX; i++){
-			pitchBend(synthNums[i], channel,value);
+		if (isInit()){
+			for(int i = 0; i < THREAD_MAX; i++){
+				pitchBend(synthNums[i], channel,value);
+			}
 		}
 	}
 

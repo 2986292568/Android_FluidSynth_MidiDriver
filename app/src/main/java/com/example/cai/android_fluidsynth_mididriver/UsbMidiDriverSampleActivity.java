@@ -229,6 +229,7 @@ public class UsbMidiDriverSampleActivity extends Activity {
             public void onMidiControlChange(@NonNull final MidiInputDevice sender, int cable, int channel, int function, int value) {
                 midiInputEventHandler.sendMessage(Message.obtain(midiInputEventHandler, 0, "ControlChange from: " + sender.getUsbDevice().getDeviceName() + ", cable: " + cable + ", channel: " + channel + ", function: " + function + ", value: " + value));
 
+                midiSynth.sendControlChange(channel,function,value);
                 if (thruToggleButton != null && thruToggleButton.isChecked() && getMidiOutputDeviceFromSpinner() != null) {
                     getMidiOutputDeviceFromSpinner().sendMidiControlChange(cable, channel, function, value);
                     midiOutputEventHandler.sendMessage(Message.obtain(midiOutputEventHandler, 0, "ControlChange from: " + sender.getUsbDevice().getDeviceName() + ", cable: " + cable + ", channel: " + channel + ", function: " + function + ", value: " + value));
@@ -239,6 +240,7 @@ public class UsbMidiDriverSampleActivity extends Activity {
             public void onMidiProgramChange(@NonNull final MidiInputDevice sender, int cable, int channel, int program) {
                 midiInputEventHandler.sendMessage(Message.obtain(midiInputEventHandler, 0, "ProgramChange from: " + sender.getUsbDevice().getDeviceName() + ", cable: " + cable + ", channel: " + channel + ", program: " + program));
 
+                midiSynth.sendProgramChange(channel,program);
                 if (thruToggleButton != null && thruToggleButton.isChecked() && getMidiOutputDeviceFromSpinner() != null) {
                     getMidiOutputDeviceFromSpinner().sendMidiProgramChange(cable, channel, program);
                     midiOutputEventHandler.sendMessage(Message.obtain(midiOutputEventHandler, 0, "ProgramChange from: " + sender.getUsbDevice().getDeviceName() + ", cable: " + cable + ", channel: " + channel + ", program: " + program));
@@ -258,6 +260,7 @@ public class UsbMidiDriverSampleActivity extends Activity {
 
             @Override
             public void onMidiPitchWheel(@NonNull final MidiInputDevice sender, int cable, int channel, int amount) {
+                midiSynth.sendPitchBend(channel,amount);
                 midiInputEventHandler.sendMessage(Message.obtain(midiInputEventHandler, 0, "PitchWheel from: " + sender.getUsbDevice().getDeviceName() + ", cable: " + cable + ", channel: " + channel + ", amount: " + amount));
 
                 if (thruToggleButton != null && thruToggleButton.isChecked() && getMidiOutputDeviceFromSpinner() != null) {
