@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
-
+		compileSdkVersion 25
+    buildToolsVersion '26.0.0 rc1'
+    
     defaultConfig {
-        applicationId "com.example.cai.android_fluidsynth_mididriver"
+        applicationId 'com.example.cai.android_fluidsynth_mididriver'
         minSdkVersion 14
-        targetSdkVersion 23
-        versionCode 1
+        targetSdkVersion 25
+        versionCode 25
         versionName "1.0"
 
         sourceSets.main{
@@ -39,5 +39,15 @@ android {
 
 dependencies {
     compile project(':MIDIDriver')
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:25.4.0'
+}
+
+repositories {
+    maven {
+        url 'https://maven.google.com/'
+        name 'Google'
+    }
+
+    maven { url 'https://github.com/kshoji/javax.sound.midi-for-Android/raw/master/javax.sound.midi/repository' }
+    maven { url 'https://github.com/kshoji/USB-MIDI-Driver/raw/master/MIDIDriver/snapshots' }
 }

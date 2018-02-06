@@ -5,6 +5,10 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.util.SparseArray;
 
+/**
+ * 使用sf2音色库播放midi
+ * @author Cai
+ */
 public class MidiSynth {
 
 	private static final String JNI_LIBRARY_NAME = new String("fluidsynth-android");

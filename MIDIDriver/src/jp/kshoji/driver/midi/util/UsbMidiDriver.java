@@ -5,6 +5,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.support.annotation.NonNull;
 
+import java.io.Closeable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +22,7 @@ import jp.kshoji.driver.midi.listener.OnMidiInputEventListener;
  *
  * @author K.Shoji
  */
-public abstract class UsbMidiDriver implements OnMidiDeviceDetachedListener, OnMidiDeviceAttachedListener, OnMidiInputEventListener {
+public abstract class UsbMidiDriver implements OnMidiDeviceDetachedListener, OnMidiDeviceAttachedListener, OnMidiInputEventListener,Closeable {
     private boolean isOpen = false;
 
     /**
@@ -137,6 +138,7 @@ public abstract class UsbMidiDriver implements OnMidiDeviceDetachedListener, OnM
      * Shutdown the USB device communicating thread.
      * The all connected devices will be closed.
      */
+    @Override
     public final void close() {
         if (!isOpen) {
             // already closed

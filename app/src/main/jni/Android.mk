@@ -21,8 +21,15 @@ fluid_dart.c		fluid_ramsfont.c	\
 fluid_defsfont.c	fluid_rev.c \
 org_herac_tuxguitar_player_impl_midiport_fluidsynth_MidiSynth.c
 
-
 LOCAL_LDLIBS    += -llog
- 
+
 include $(BUILD_SHARED_LIBRARY)
 
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE    := midi
+LOCAL_SRC_FILES := SLESMidi/midi.cpp
+LOCAL_LDLIBS += -lOpenSLES -llog
+
+include $(BUILD_SHARED_LIBRARY)

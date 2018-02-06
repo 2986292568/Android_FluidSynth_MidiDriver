@@ -1,1 +1,1 @@
-include ':app', ':MIDIDriver', ':javax.sound.midi'
+include ':app', ':MIDIDriver'
