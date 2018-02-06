@@ -1,8 +1,10 @@
 package com.example.cai.android_fluidsynth_mididriver;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff.Mode;
 import android.hardware.usb.UsbDevice;
 import android.os.Bundle;
@@ -11,6 +13,8 @@ import android.os.Handler.Callback;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -57,6 +61,8 @@ public class TestActivity extends Activity {
     private MidiDriver mMidiPlayer;
     private MidiSynth midiSynth;
 
+    public static final int REQUEST_CODE = 0x1001;
+
 	// User interface
 	final Handler midiInputEventHandler = new Handler(new Callback() {
 		@Override
@@ -77,6 +83,20 @@ public class TestActivity extends Activity {
 			return true;
 		}
 	});
+
+    /**
+     * 注册读写权限
+     */
+    public static void registerExternalPermission(Context context){
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_CODE);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_CODE + 1);
+        }
+    }
 
     /**
      * Choose device from spinner
@@ -128,6 +148,8 @@ public class TestActivity extends Activity {
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+
+        registerExternalPermission(this);
 
         String filePath = getCopyFile(this,"aaa.sf2");
 

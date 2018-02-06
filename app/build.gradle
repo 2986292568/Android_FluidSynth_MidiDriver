@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
 		compileSdkVersion 25
     buildToolsVersion '26.0.0 rc1'
-    
+
     defaultConfig {
         applicationId 'com.example.cai.android_fluidsynth_mididriver'
         minSdkVersion 14
@@ -11,11 +11,11 @@ android {
         versionCode 25
         versionName "1.0"
 
-        sourceSets.main{
-            jni.srcDirs = []
-            jniLibs.srcDir 'main/jniLibs'
-            assets.srcDir 'main/assets'
-        }
+//        externalNativeBuild {
+//            ndkBuild {
+//                abiFilters "armeabi-v7a"
+//            }
+//        }
     }
     buildTypes {
         release {
@@ -24,22 +24,17 @@ android {
         }
     }
 
-    task nativeLibsToJar(type: Zip, description: "create a jar archive of the native libs") {
-        destinationDir file("$projectDir/libs")
-        baseName "fluidsynth-android"
-        extension "jar"
-        from fileTree(dir: "libs", include: "**/*.so")
-        into "lib"
-    }
-
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn(nativeLibsToJar)
+    externalNativeBuild {
+        ndkBuild {
+            path "jni/Android.mk"
+        }
     }
 }
 
 dependencies {
     compile project(':MIDIDriver')
     compile 'com.android.support:appcompat-v7:25.4.0'
+    compile 'com.github.billthefarmer:mididriver:v1.14'
 }
 
 repositories {
@@ -50,4 +45,6 @@ repositories {
 
     maven { url 'https://github.com/kshoji/javax.sound.midi-for-Android/raw/master/javax.sound.midi/repository' }
     maven { url 'https://github.com/kshoji/USB-MIDI-Driver/raw/master/MIDIDriver/snapshots' }
+
+    maven { url "https://jitpack.io" }
 }
